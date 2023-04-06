@@ -129,7 +129,7 @@ public class GitAwareEntityHelperTest extends CategoryTest {
         ScmGetFileResponse.builder().fileContent(data).gitMetaData(scmGitMetaData).build();
     doReturn(getFileResponse)
         .when(scmGitSyncHelper)
-        .getFileByBranch(scope, repoName, branch, commitId, yamlFilePath, connectorRef, false, entityType, null, false);
+        .getFileByBranch(scope, repoName, branch, "", yamlFilePath, connectorRef, false, entityType, null, false);
     DummyGitAware dummyGitAware = DummyGitAware.builder().build();
     GitAware gitAware = gitAwareEntityHelper.fetchEntityFromRemote(dummyGitAware, scope, gitContextRequestParams, null);
     assertThat(gitAware.getData()).isEqualTo(data);
@@ -168,7 +168,7 @@ public class GitAwareEntityHelperTest extends CategoryTest {
         ScmGetFileResponse.builder().fileContent(data).gitMetaData(scmGitMetaData).build();
     doReturn(getFileResponse)
         .when(scmGitSyncHelper)
-        .getFileByBranch(scope, repoName, branch, commitId, yamlFilePath, connectorRef, false, entityType, null, false);
+        .getFileByBranch(scope, repoName, branch, "", yamlFilePath, connectorRef, false, entityType, null, false);
     String data = gitAwareEntityHelper.fetchYAMLFromRemote(scope, gitContextRequestParams, null);
     assertThat(data).isEqualTo(data);
     ScmGitMetaData scmGitMetaDataInContext = GitAwareContextHelper.getScmGitMetaData();
