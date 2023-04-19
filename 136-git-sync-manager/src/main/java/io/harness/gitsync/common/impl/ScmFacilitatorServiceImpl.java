@@ -1089,14 +1089,12 @@ public class ScmFacilitatorServiceImpl implements ScmFacilitatorService {
   private void upsertGetFileCache(String accountIdentifier, GitFileResponse gitFileResponse, ScmConnector scmConnector,
       String repoName, String requestBranch, String filepath) {
     try {
-      String ref = isEmpty(gitFileResponse.getBranch()) ? gitFileResponse.getCommitId() : gitFileResponse.getBranch();
-
       gitFileCacheService.upsertCache(GitFileCacheKey.builder()
                                           .accountIdentifier(accountIdentifier)
                                           .completeFilePath(filepath)
                                           .gitProvider(GitProviderUtils.getGitProvider(scmConnector))
                                           .repoName(repoName)
-                                          .ref(ref)
+                                          .ref(gitFileResponse.getBranch())
                                           .isDefaultBranch(isEmpty(requestBranch))
                                           .build(),
           GitFileCacheObject.builder()
