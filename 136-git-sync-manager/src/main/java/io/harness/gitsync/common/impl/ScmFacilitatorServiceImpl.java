@@ -320,7 +320,6 @@ public class ScmFacilitatorServiceImpl implements ScmFacilitatorService {
 
     String commitId =
         getLatestCommitOnFileResponse == null ? fileContent.getCommitId() : getLatestCommitOnFileResponse.getCommitId();
-    String ref = isEmpty(branchName) ? commitId : branchName;
 
     try {
       gitFileCacheService.upsertCache(GitFileCacheKey.builder()
@@ -328,7 +327,7 @@ public class ScmFacilitatorServiceImpl implements ScmFacilitatorService {
                                           .completeFilePath(scmGetFileByBranchRequestDTO.getFilePath())
                                           .gitProvider(GitProviderUtils.getGitProvider(scmConnector))
                                           .repoName(scmGetFileByBranchRequestDTO.getRepoName())
-                                          .ref(ref)
+                                          .ref(branchName)
                                           .isDefaultBranch(isEmpty(scmGetFileByBranchRequestDTO.getBranchName()))
                                           .build(),
           GitFileCacheObject.builder()
@@ -870,17 +869,13 @@ public class ScmFacilitatorServiceImpl implements ScmFacilitatorService {
 
   private GitFileCacheKey getCacheKey(
       ScmGetFileByBranchRequestDTO scmGetFileByBranchRequestDTO, ScmConnector scmConnector) {
-    String ref = isNotEmpty(scmGetFileByBranchRequestDTO.getCommitId()) ? scmGetFileByBranchRequestDTO.getCommitId()
-                                                                        : scmGetFileByBranchRequestDTO.getBranchName();
-
     return GitFileCacheKey.builder()
         .accountIdentifier(scmGetFileByBranchRequestDTO.getScope().getAccountIdentifier())
         .completeFilePath(scmGetFileByBranchRequestDTO.getFilePath())
         .repoName(scmGetFileByBranchRequestDTO.getRepoName())
         .gitProvider(GitProviderUtils.getGitProvider(scmConnector))
-        .ref(ref)
-        .isDefaultBranch(isEmpty(scmGetFileByBranchRequestDTO.getBranchName())
-            && isEmpty(scmGetFileByBranchRequestDTO.getCommitId()))
+        .ref(scmGetFileByBranchRequestDTO.getBranchName())
+        .isDefaultBranch(isEmpty(scmGetFileByBranchRequestDTO.getBranchName()))
         .build();
   }
 
@@ -902,11 +897,9 @@ public class ScmFacilitatorServiceImpl implements ScmFacilitatorService {
       GitFileCacheResponse gitFileCacheResponse = getFileFromCache(cacheKey);
       if (gitFileCacheResponse != null) {
         log.info("CACHE HIT for cacheKey : {}", cacheKey);
-        String branchName = isNotEmpty(scmGetFileByBranchRequestDTO.getCommitId())
-            ? ""
-            : gitFileCacheResponse.getGitFileCacheResponseMetadata().getRef();
         return Optional.of(prepareScmGetFileCacheResponse(gitFileCacheResponse.getGitFileCacheObject().getFileContent(),
-            branchName, gitFileCacheResponse.getGitFileCacheObject().getCommitId(),
+            gitFileCacheResponse.getGitFileCacheResponseMetadata().getRef(),
+            gitFileCacheResponse.getGitFileCacheObject().getCommitId(),
             gitFileCacheResponse.getGitFileCacheObject().getObjectId(), gitFileCacheResponse.getCacheDetails()));
       }
     }
