@@ -183,7 +183,7 @@ public class HarnessToGitPushInfoGrpcService extends HarnessToGitPushInfoService
     UserDetailsResponse userDetailsResponse;
     Map<String, String> contextMap =
         GitSyncLogContextHelper.setContextMap(Scope.builder().accountIdentifier(request.getAccountIdentifier()).build(),
-            EMPTY_STRING, EMPTY_STRING, EMPTY_STRING, GitOperation.GET_USER_DETAILS, null);
+            EMPTY_STRING, EMPTY_STRING, EMPTY_STRING, EMPTY_STRING, GitOperation.GET_USER_DETAILS, null);
 
     try (GlobalContextManager.GlobalContextGuard guard = GlobalContextManager.ensureGlobalContextGuard();
          MdcContextSetter ignore1 = new MdcContextSetter(contextMap)) {
