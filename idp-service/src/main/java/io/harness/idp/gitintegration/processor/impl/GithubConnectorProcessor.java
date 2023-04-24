@@ -94,15 +94,15 @@ public class GithubConnectorProcessor extends ConnectorProcessor {
   }
 
   public void performPushOperation(String accountIdentifier, CatalogConnectorInfo catalogConnectorInfo,
-      String locationParentPath, List<String> filesToPush) {
+      String locationParentPath, List<String> filesToPush, boolean throughGrpc) {
     ConnectorInfoDTO connectorInfoDTO =
-        getConnectorInfo(accountIdentifier, catalogConnectorInfo.getInfraConnector().getIdentifier());
+        getConnectorInfo(accountIdentifier, catalogConnectorInfo.getConnector().getIdentifier());
     Map<String, BackstageEnvVariable> connectorSecretsInfo =
         getConnectorAndSecretsInfo(accountIdentifier, connectorInfoDTO);
     BackstageEnvSecretVariable envSecretVariable =
         (BackstageEnvSecretVariable) connectorSecretsInfo.get(Constants.GITHUB_TOKEN);
     String githubConnectorSecret = GitIntegrationUtils.decryptSecret(ngSecretService, accountIdentifier, null, null,
-        envSecretVariable.getHarnessSecretIdentifier(), catalogConnectorInfo.getSourceConnector().getIdentifier());
+        envSecretVariable.getHarnessSecretIdentifier(), catalogConnectorInfo.getConnector().getIdentifier());
 
     GithubConnectorDTO config = (GithubConnectorDTO) connectorInfoDTO.getConnectorConfig();
     GithubHttpCredentialsOutcomeDTO outcome =
@@ -110,6 +110,6 @@ public class GithubConnectorProcessor extends ConnectorProcessor {
     GithubUsernameTokenDTO spec = (GithubUsernameTokenDTO) outcome.getSpec();
 
     performPushOperationInternal(accountIdentifier, catalogConnectorInfo, locationParentPath, filesToPush,
-        spec.getUsername(), githubConnectorSecret);
+        spec.getUsername(), githubConnectorSecret, throughGrpc);
   }
 }
